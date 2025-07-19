@@ -33,3 +33,4 @@ C:\Users\rm210\Documents\backed\ApiClima\obj\Debug\net9.0\ref\ApiClima.dll
 C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\rm210\Documents\backed\ApiClima\obj\Debug\net9.0\ApiClima.sourcelink.json

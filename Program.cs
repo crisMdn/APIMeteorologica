@@ -1,9 +1,13 @@
+//registra WeatherService como dependencia 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Agrega servicios de controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//Inyectar configuracion Automaticamente 
+builder.Services.AddSingleton<WeatherService>();
 
 var app = builder.Build();
 
