@@ -1,0 +1,13 @@
+| Palabra / Estructura   | Significado corto                                   | Ejemplo / Notas rápidas           |
+| ---------------------- | --------------------------------------------------- | --------------------------------- |
+| `using`                | Importa namespaces (librerías)                      | `using Microsoft.AspNetCore.Mvc;` |
+| `public`               | Accesible desde cualquier parte                     |                                   |
+| `private`              | Solo accesible dentro de la misma clase             |                                   |
+| `readonly`             | Solo se asigna una vez, dentro del constructor      | Usado para inyectar dependencias  |
+| `async`                | Permite ejecutar métodos asincrónicos               |                                   |
+| `await`                | Espera a que una tarea asincrónica termine          | Solo dentro de métodos `async`    |
+| `Task<T>`              | Representa una operación asincrónica que devuelve T |                                   |
+| `IActionResult`        | Tipo de respuesta HTTP que puede devolver un método | ok, default, NOcontent,           |
+| `[ApiController]`      | Marca la clase como controlador de API              |                                   |
+| `[Route]`, `[HttpGet]` | Define rutas y métodos HTTP del endpoint            |                                   |
+| `ControllerBase`       | Clase base para controladores sin vistas            |                                   |

@@ -53,9 +53,12 @@ using Microsoft.AspNetCore.Mvc;
 
 public class WeatherController : ControllerBase
 {
-    private readonly WeatherService _weatherService;
+    private readonly WeatherService _weatherService; // --name varibale 
+    // readonly usado para dependencias inyectadas garantizando que no se sobreescriba la referencia 
     // 👉 Dependencia inyectada del servicio que consulta la API externa
 
+
+//constructor declarado 
     public WeatherController(WeatherService weatherService)
     {
         _weatherService = weatherService;
@@ -65,11 +68,12 @@ public class WeatherController : ControllerBase
     [HttpGet("{city}")]
     // 👉 Responde a solicitudes GET con una ciudad como parámetro. Ej: /weather/SanSalvador
 
-    public async Task<IActionResult> GetWeather(string city)
-    {
+    //METODO PUBLICO
+    public async Task<IActionResult> GetWeather(string city) //Async asincronico a espera de una respuesta de la api externa  //async y tanks lo uso a la vez 
+    {   //Cuando usás await, tu método debe ser async, y todo método async que retorna algo, debe devolver un Task<T>.
         var result = await _weatherService.GetWeatherAsync(city);
         // 👉 Llama al método del servicio para obtener el clima real desde Visual Crossing
-
+        
         return Content(result, "application/json");
         // 👉 Devuelve la respuesta como JSON plano (ya viene en formato JSON desde la API externa)
     }
