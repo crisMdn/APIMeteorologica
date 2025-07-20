@@ -34,3 +34,5 @@ C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore
 C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\rm210\Documents\backed\ApiClima\obj\Debug\net9.0\ApiClima.sourcelink.json
+C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\rm210\Documents\backed\ApiClima\bin\Debug\net9.0\StackExchange.Redis.dll

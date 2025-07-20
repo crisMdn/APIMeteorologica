@@ -41,7 +41,10 @@ public class WeatherController : ControllerBase
 // http://localhost:5130/weather/{ciudad}
 */
 
+//SEGUNDA FASE -----------------INTEGRACION DE LA API CON INYECION ---------------
+
 //DATOS GENERAL:  Inyecta Weather service y responde el cliente 
+/*
 using Microsoft.AspNetCore.Mvc;
 // 👉 Importa lo necesario para trabajar con controladores, rutas y respuestas HTTP (IActionResult)
 
@@ -76,5 +79,47 @@ public class WeatherController : ControllerBase
         
         return Content(result, "application/json");
         // 👉 Devuelve la respuesta como JSON plano (ya viene en formato JSON desde la API externa)
+    }
+}*/
+
+//---------------------------------------------------------------INTEGRACION DE REDIS --------------------
+
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using ApiClima.Service; // 👉 Asegurate que el namespace sea correcto para RedisCacheService
+
+[ApiController]
+[Route("[controller]")]
+public class WeatherController : ControllerBase
+{
+    private readonly WeatherService _weatherService;        // 👉 Servicio que consulta la API externa
+    private readonly RedisCacheService _redisCacheService;  // 👉 Servicio que gestiona el caché Redis
+
+    // 👉 Constructor con ambas dependencias inyectadas
+    public WeatherController(WeatherService weatherService, RedisCacheService redisCacheService)
+    {
+        _weatherService = weatherService;
+        _redisCacheService = redisCacheService;
+    }
+
+    [HttpGet("{city}")]
+    public async Task<IActionResult> GetWeather(string city)
+    {
+        // 👉 Verificamos si ya hay una respuesta guardada en caché
+        var cachedResult = await _redisCacheService.GetAsync(city);
+
+        if (!string.IsNullOrEmpty(cachedResult))
+        {
+            // 👉 Si hay datos en caché, se devuelven directamente
+            return Content(cachedResult, "application/json");
+        }
+
+        // 👉 Si no hay caché, se consulta a la API externa
+        var result = await _weatherService.GetWeatherAsync(city);
+
+        // 👉 Guardamos el resultado en caché por 1 hora
+        await _redisCacheService.SetAsync(city, result, TimeSpan.FromHours(1));
+
+        return Content(result, "application/json");
     }
 }
