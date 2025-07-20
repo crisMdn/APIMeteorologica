@@ -6,7 +6,7 @@ Este proyecto es una API REST construida en C# con ASP.NET Core, que actúa como
 
 ## 🔍 Objetivo
 
-Crear una API capaz de consultar el estado del clima de una ciudad específica, utilizando una API externa, protegiendo las claves sensibles y optimizando el rendimiento mediante técnicas modernas como la **inyección de dependencias** y (en futuras fases) **almacenamiento en caché con Redis**.
+Crear una API capaz de consultar el estado del clima de una ciudad específica, utilizando una API externa, protegiendo las claves sensibles y optimizando el rendimiento mediante técnicas modernas como la **inyección de dependencias** y **almacenamiento en caché con Redis**.
 
 ---
 
@@ -23,7 +23,7 @@ En lugar de consumir directamente la API de Visual Crossing desde el frontend, s
 
 ## 🧩 Inyección de Dependencias
 
-Se utilizó **inyección de dependencias** para conectar el controlador (`WeatherController`) con el servicio (`WeatherService`) sin acoplarlos directamente. Esto permite:
+Se utilizó **inyección de dependencias** para conectar el controlador (`WeatherController`) con los servicios (`WeatherService` y `RedisCacheService`) sin acoplarlos directamente. Esto permite:
 
 - Código más limpio y mantenible.
 - Facilita pruebas unitarias.
@@ -31,10 +31,12 @@ Se utilizó **inyección de dependencias** para conectar el controlador (`Weathe
 
 ```csharp
 private readonly WeatherService _weatherService;
+private readonly RedisCacheService _redisCacheService;
 
-public WeatherController(WeatherService weatherService)
+public WeatherController(WeatherService weatherService, RedisCacheService redisCacheService)
 {
     _weatherService = weatherService;
+    _redisCacheService = redisCacheService;
 }
 ```
 
@@ -49,7 +51,8 @@ public WeatherController(WeatherService weatherService)
 │   └── WeatherController.cs
 │
 ├── Services
-│   └── WeatherService.cs
+│   ├── WeatherService.cs
+│   └── RedisCacheService.cs
 │
 ├── appsettings.json     // Configuración de clave API y URL base
 ├── Program.cs           // Registro de servicios (inyección)
@@ -79,15 +82,51 @@ public async Task<string> GetWeatherAsync(string city)
 
 ---
 
-## 🔄 Plan Futuro: Integración con Redis
+## ⚙️ Integración con Redis (Caché)
 
-En la siguiente fase se integrará **Redis** para almacenar en caché las respuestas por ciudad durante cierto tiempo (por ejemplo, 12 horas). Esto permitirá:
+### 🔧 ¿Qué se hizo?
 
-- ⚡ Mejorar la velocidad de respuesta.
-- 🔁 Evitar llamadas repetitivas innecesarias.
-- 📉 Reducir la carga sobre la API externa.
+1. Se creó el servicio `RedisCacheService` con dos métodos principales:
+   - `SetAsync(key, value, expiration)` para guardar en caché.
+   - `GetAsync(key)` para obtener el valor cacheado.
 
-La clave de cache será el nombre de la ciudad, y se usará un tiempo de expiración (`EX`).
+2. Se registró el cliente Redis en `Program.cs`:
+
+```csharp
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+});
+```
+
+3. Se registró el servicio Redis para inyección:
+
+```csharp
+builder.Services.AddSingleton<RedisCacheService>();
+```
+
+4. En `WeatherController`, se añadió la lógica para primero consultar la caché antes de hacer la llamada HTTP externa:
+
+```csharp
+var cachedResult = await _redisCacheService.GetAsync(city);
+if (!string.IsNullOrEmpty(cachedResult))
+{
+    return Content(cachedResult, "application/json");
+}
+
+var result = await _weatherService.GetWeatherAsync(city);
+await _redisCacheService.SetAsync(city, result, TimeSpan.FromHours(1));
+return Content(result, "application/json");
+```
+
+---
+
+## ✅ Beneficios del uso de Redis
+
+- ⚡ **Velocidad**: disminuye el tiempo de respuesta al cliente.
+- 📉 **Menos carga** sobre la API externa.
+- 🔁 **Datos persistentes temporalmente** que evitan consultas repetidas.
+- 🚀 **Preparado para escalar** a proyectos más grandes.
 
 ---
 
@@ -106,4 +145,4 @@ GET http://localhost:5130/weather/SanSalvador
 - HttpClient
 - Visual Crossing API
 - Swagger (documentación automática)
-- Redis (próximamente)
+- Redis (caché con StackExchange.Redis)
