@@ -1,32 +1,33 @@
-//registra WeatherService como dependencia 
-using ApiClima.Service; // 👈 Asegurate que coincida con el namespace del archivo RedisCacheService.cs
+using ApiClima.Service; // 👈 Asegúrate que coincida con el namespace del archivo RedisCacheService.cs
 
+// 🛠️ Crea el constructor de la app y carga configuración, servicios y entorno
 var builder = WebApplication.CreateBuilder(args);
 
-// Agrega servicios de controladores y Swagger
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//Inyectar configuracion Automaticamente 
-builder.Services.AddSingleton<WeatherService>();
-//INTEGRACION DE REDIS 
-builder.Services.AddSingleton(new RedisCacheService("localhost:6379"));
+// 📦 Registra servicios (dependencias) que usará la aplicación
+builder.Services.AddControllers();                 // Controladores de la API
+builder.Services.AddEndpointsApiExplorer();       // Soporte para Swagger con minimal APIs
+builder.Services.AddSwaggerGen();                 // Documentación Swagger
 
+builder.Services.AddSingleton<WeatherService>();  // Inyección de dependencia para WeatherService
+builder.Services.AddSingleton(new RedisCacheService("localhost:6379")); // Redis como singleton
 
-var app = builder.Build();
+// ⚙️ Construye la instancia final de la aplicación con toda la configuración anterior
+var app = builder.Build(); // Ahora podés usar app para middlewares, rutas, y ejecutar la app
 
-// Habilitar Swagger en desarrollo
+// 🔍 Habilita Swagger SOLO en entorno de desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// 🔐 Middlewares para seguridad y permisos
+app.UseHttpsRedirection(); // Redirige HTTP a HTTPS (comunicación cifrada)
+app.UseAuthorization();    // Verifica permisos (luego de la autenticación)
 
-app.UseAuthorization();
-
-// Mapea controladores (muy importante)
+// 🚦 Mapea rutas de los controladores con atributos [Route]
 app.MapControllers();
 
+// 🚀 Ejecuta la aplicación (arranca el servidor)
 app.Run();
+

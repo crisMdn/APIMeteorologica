@@ -1,7 +1,7 @@
 // 🌦️ WeatherService.cs
 // Esta clase se encarga de consumir la API externa de Visual Crossing para obtener información del clima.
 
-using System.Net.Http;                 // 👉 Necesario para hacer solicitudes HTTP (GET, POST, etc.)
+using System.Net.Http;                 // 👉 Necesario para hacer solicitudes HTTP (GET, POST, etc.), gracias a esto puedo usar la linea 10
 using System.Threading.Tasks;         // 👉 Permite trabajar con tareas asincrónicas (async/await)
 using Microsoft.Extensions.Configuration; // 👉 Se usa para acceder a la configuración del archivo appsettings.json
 
@@ -24,17 +24,17 @@ public class WeatherService //declaracion de clase que usare para comunicarme co
 
     public async Task<string> GetWeatherAsync(string city)
     {
-        // 👉 Se arma la URL completa con parámetros: ciudad, unidad de medida, clave y tipo de contenido (JSON)
+        // 👉 Se construye la URL completa con parámetros: ciudad, unidad de medida, clave y tipo de contenido (JSON)
         var url = $"{_baseUrl}/{city}?unitGroup=metric&key={_apiKey}&contentType=json";
 
-        // 👉 Se hace la solicitud GET a la API de Visual Crossing
+        // 👉 Se hace la peticion GET a la API de Visual Crossing
         var response = await _httpClient.GetAsync(url);
 
         // 👉 Si la respuesta no es exitosa (por ejemplo, error 400 o 500), se devuelve el código de error
         // 👉 Verifica si la respuesta HTTP fue exitosa (verificando la varibale reponse).
         // 👉 Si NO lo fue (!), devuelve un mensaje de error con el código de estado (como 404, 500, etc.)
         // 👉 Esto evita procesar respuestas fallidas o vacías desde la API externa.
-        if (!response.IsSuccessStatusCode) //esta es propiedad de la clase HttpReponse y devuelve True si esta entre 200 y 299
+        if (!response.IsSuccessStatusCode) // IsSucces esta es propiedad de la clase HttpReponse y devuelve True si la solicitud es exitosa, se usa ! para dar lo contrario 
         {
             return $"Error :c : {response.StatusCode}";
         }
